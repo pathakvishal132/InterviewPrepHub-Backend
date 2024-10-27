@@ -19,8 +19,6 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     ".vercel.app",
-    "https://interview-prep-hub-backend-3q0lfy7kd-pathakvishal132s-projects.vercel.app",
-    "https://interview-prep-hub-backend-three.vercel.app",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
