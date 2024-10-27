@@ -15,7 +15,13 @@ SECRET_KEY = "django-insecure-wtw)7(cunx@nvk0x^zrt_@(8h+yxxth=nykwikd8&e#_@dbenk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "vercel.app"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".vercel.app",
+    "https://interview-prep-hub-backend-3q0lfy7kd-pathakvishal132s-projects.vercel.app",
+    "https://interview-prep-hub-backend-three.vercel.app",
+]
 
 CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
