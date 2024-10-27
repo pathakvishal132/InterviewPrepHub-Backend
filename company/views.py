@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import CompanyQuestion, Company
 from .serializers import CompanyQuestionSerializer, CompanySerializer
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 @api_view(["GET", "POST", "PUT", "DELETE"])
@@ -68,22 +68,59 @@ def company_question_handler(request, company_question_id=None):
         )
 
 
+# @api_view(["GET"])
+# def get_company(request):
+#     if request.method == "GET":
+#         company_names = Company.objects.all()
+
+#         # Pagination logic
+#         page = request.GET.get("page")
+#         paginator = Paginator(company_names, 8)
+
+#         try:
+#             companies_page = paginator.page(page)
+#         except:
+#             return Response(
+#                 {"detail": "Invalid page number."}, status=status.HTTP_400_BAD_REQUEST
+#             )
+
+#         serializer = CompanySerializer(companies_page.object_list, many=True)
+
+#         # Preparing response data
+#         response_data = {
+#             "companies": serializer.data,
+#             "total_pages": paginator.num_pages,
+#             "current_page": companies_page.number,
+#             "total_companies": paginator.count,
+#         }
+
+#         return Response(response_data, status=status.HTTP_200_OK)
+
+
 @api_view(["GET"])
 def get_company(request):
     if request.method == "GET":
-        company_names = Company.objects.all()
+        # Order the queryset to prevent UnorderedObjectListWarning
+        company_names = Company.objects.all().order_by("id")
 
         # Pagination logic
-        page = request.GET.get("page")
+        page = request.GET.get("page", 1)  # Default to page 1 if no page parameter
         paginator = Paginator(company_names, 8)
 
         try:
             companies_page = paginator.page(page)
-        except:
+        except PageNotAnInteger:
             return Response(
-                {"detail": "Invalid page number."}, status=status.HTTP_400_BAD_REQUEST
+                {"detail": "Invalid page number format."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except EmptyPage:
+            return Response(
+                {"detail": "Page number out of range."},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
+        # Serialize the data
         serializer = CompanySerializer(companies_page.object_list, many=True)
 
         # Preparing response data
