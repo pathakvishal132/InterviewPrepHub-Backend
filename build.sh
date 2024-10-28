@@ -1,11 +1,9 @@
 #!/bin/bash
 
 # Build the project
-echo "Building the project..."
-python3 -m pip install -r requirements.txt
-
-# Make Migrations
+pip install setuptools
+pip install -r requirements.txt
 echo "Making migrations..."
-python3 manage.py makemigrations 
-python3 manage.py migrate 
+python manage.py makemigrations 
+python manage.py migrate 
 
