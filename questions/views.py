@@ -49,7 +49,7 @@ def get_questions(request):
                 {"error": "Subdomain parameter is required"}, status=400
             )
 
-        prompt = f"Generate 10 questions related to {subdomain}"
+        prompt = f"Generate 20 questions related to {subdomain}"
         res = generate_response(prompt)
 
         # Parse the questions and return them in the desired format
