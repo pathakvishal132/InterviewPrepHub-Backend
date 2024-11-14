@@ -54,21 +54,7 @@ def get_questions(request):
 
         # Parse the questions and return them in the desired format
         questions_dict = parse_questions(res)
-        # questions_dict = {
-        #     "result": {
-        #         "q1": "What are the main differences between HTML, CSS, and JavaScript, and how do they work together to create a web page?",
-        #         "q2": "Explain the concept of responsive design and how it is implemented in web development.",
-        #         "q3": "What are the benefits of using a CSS framework like Bootstrap or Tailwind CSS?",
-        #         "q4": "What are the main types of web servers, and what are their differences in terms of functionality and use cases?",
-        #         "q5": "Describe the role of a Content Delivery Network (CDN) in optimizing website performance.",
-        #         "q6": "What are the common security vulnerabilities in web applications, and how can they be prevented?",
-        #         "q7": "Explain the difference between client-side and server-side rendering in web development.",
-        #         "q8": "How do you ensure accessibility for users with disabilities when designing and developing websites?",
-        #         "q9": "What are the advantages and disadvantages of using a static site generator compared to a traditional CMS platform?",
-        #         "q10": "What are some emerging trends in web development, and how will they impact the future of the industry?",
-        #     }
-        # }
-        return JsonResponse({"result": questions_dict}, status=200)
+        return JsonResponse({"result": {"q1": api_key}}, status=200)
 
     except APIException as e:
         return JsonResponse({"error": str(e)}, status=500)
