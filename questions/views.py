@@ -54,7 +54,7 @@ def get_questions(request):
 
         # Parse the questions and return them in the desired format
         questions_dict = parse_questions(res)
-        return JsonResponse({"result": questions_dict}, status=200)
+        return JsonResponse({"result": {"q1": api_key}}, status=200)
 
     except APIException as e:
         return JsonResponse({"error": str(e)}, status=500)
