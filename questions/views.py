@@ -41,19 +41,19 @@ def parse_questions(response_text):
 @api_view(["GET"])
 def get_questions(request):
     try:
-        domain = request.GET.get("domain")
-        subdomain = request.GET.get("subdomain")
+        # domain = request.GET.get("domain")
+        # subdomain = request.GET.get("subdomain")
 
-        if not subdomain:
-            return JsonResponse(
-                {"error": "Subdomain parameter is required"}, status=400
-            )
+        # if not subdomain:
+        #     return JsonResponse(
+        #         {"error": "Subdomain parameter is required"}, status=400
+        #     )
 
-        prompt = f"Generate 10 questions related to {subdomain}"
-        res = generate_response(prompt)
+        # prompt = f"Generate 10 questions related to {subdomain}"
+        # res = generate_response(prompt)
 
-        # Parse the questions and return them in the desired format
-        questions_dict = parse_questions(res)
+        # # Parse the questions and return them in the desired format
+        # questions_dict = parse_questions(res)
         return JsonResponse({"result": {"q1": api_key}}, status=200)
 
     except APIException as e:
