@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Speech
+from .models import Email
 
 
-class SpeechSerializer(serializers.ModelSerializer):
+class EmailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Speech
-        fields = ("id", "speech_text", "language")
+        model = Email
+        fields = ("id", "name", "message", "email")

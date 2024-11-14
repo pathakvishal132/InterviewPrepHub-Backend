@@ -68,45 +68,12 @@ def company_question_handler(request, company_question_id=None):
         )
 
 
-# @api_view(["GET"])
-# def get_company(request):
-#     if request.method == "GET":
-#         company_names = Company.objects.all()
-
-#         # Pagination logic
-#         page = request.GET.get("page")
-#         paginator = Paginator(company_names, 8)
-
-#         try:
-#             companies_page = paginator.page(page)
-#         except:
-#             return Response(
-#                 {"detail": "Invalid page number."}, status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         serializer = CompanySerializer(companies_page.object_list, many=True)
-
-#         # Preparing response data
-#         response_data = {
-#             "companies": serializer.data,
-#             "total_pages": paginator.num_pages,
-#             "current_page": companies_page.number,
-#             "total_companies": paginator.count,
-#         }
-
-#         return Response(response_data, status=status.HTTP_200_OK)
-
-
 @api_view(["GET"])
 def get_company(request):
     if request.method == "GET":
-        # Order the queryset to prevent UnorderedObjectListWarning
         company_names = Company.objects.all().order_by("id")
-
-        # Pagination logic
-        page = request.GET.get("page", 1)  # Default to page 1 if no page parameter
+        page = request.GET.get("page", 1)
         paginator = Paginator(company_names, 8)
-
         try:
             companies_page = paginator.page(page)
         except PageNotAnInteger:
@@ -119,18 +86,13 @@ def get_company(request):
                 {"detail": "Page number out of range."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-
-        # Serialize the data
         serializer = CompanySerializer(companies_page.object_list, many=True)
-
-        # Preparing response data
         response_data = {
             "companies": serializer.data,
             "total_pages": paginator.num_pages,
             "current_page": companies_page.number,
             "total_companies": paginator.count,
         }
-
         return Response(response_data, status=status.HTTP_200_OK)
 
 
@@ -225,26 +187,23 @@ def search_company(request):
 @api_view(["GET"])
 def search_question(request):
     if request.method == "GET":
-        word = request.GET.get("word")  # Get 'word' from query parameters
+        word = request.GET.get("word")
         if not word:
             return Response(
                 {"detail": "Search word is required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        # Search for questions and answers containing the search word
         questions = (
             CompanyQuestion.objects.filter(question__icontains=word).distinct()
             | CompanyQuestion.objects.filter(answer__icontains=word).distinct()
         )
-
         if not questions.exists():
             return Response(
                 {"detail": "No matching questions found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
         page = request.GET.get("page", 1)
-        paginator = Paginator(questions, 1)  # Paginate with 2 items per page
+        paginator = Paginator(questions, 1)
 
         try:
             questions_page = paginator.page(page)
@@ -253,15 +212,11 @@ def search_question(request):
                 {"detail": "Invalid page number."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        # Serialize the paginated data
         serializer = CompanyQuestionSerializer(questions_page.object_list, many=True)
-
         response_data = {
             "questions": serializer.data,
             "total_pages": paginator.num_pages,
             "current_page": questions_page.number,
             "total_questions": paginator.count,
         }
-
         return Response(response_data, status=status.HTTP_200_OK)

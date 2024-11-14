@@ -41,33 +41,33 @@ def parse_questions(response_text):
 @api_view(["GET"])
 def get_questions(request):
     try:
-        # domain = request.GET.get("domain")
-        # subdomain = request.GET.get("subdomain")
+        domain = request.GET.get("domain")
+        subdomain = request.GET.get("subdomain")
 
-        # if not subdomain:
-        #     return JsonResponse(
-        #         {"error": "Subdomain parameter is required"}, status=400
-        #     )
+        if not subdomain:
+            return JsonResponse(
+                {"error": "Subdomain parameter is required"}, status=400
+            )
 
-        # prompt = f"Generate 10 questions related to {subdomain}"
-        # res = generate_response(prompt)
+        prompt = f"Generate 10 questions related to {subdomain}"
+        res = generate_response(prompt)
 
-        # # Parse the questions and return them in the desired format
-        # questions_dict = parse_questions(res)
-        questions_dict = {
-            "result": {
-                "q1": "What are the main differences between HTML, CSS, and JavaScript, and how do they work together to create a web page?",
-                "q2": "Explain the concept of responsive design and how it is implemented in web development.",
-                "q3": "What are the benefits of using a CSS framework like Bootstrap or Tailwind CSS?",
-                "q4": "What are the main types of web servers, and what are their differences in terms of functionality and use cases?",
-                "q5": "Describe the role of a Content Delivery Network (CDN) in optimizing website performance.",
-                "q6": "What are the common security vulnerabilities in web applications, and how can they be prevented?",
-                "q7": "Explain the difference between client-side and server-side rendering in web development.",
-                "q8": "How do you ensure accessibility for users with disabilities when designing and developing websites?",
-                "q9": "What are the advantages and disadvantages of using a static site generator compared to a traditional CMS platform?",
-                "q10": "What are some emerging trends in web development, and how will they impact the future of the industry?",
-            }
-        }
+        # Parse the questions and return them in the desired format
+        questions_dict = parse_questions(res)
+        # questions_dict = {
+        #     "result": {
+        #         "q1": "What are the main differences between HTML, CSS, and JavaScript, and how do they work together to create a web page?",
+        #         "q2": "Explain the concept of responsive design and how it is implemented in web development.",
+        #         "q3": "What are the benefits of using a CSS framework like Bootstrap or Tailwind CSS?",
+        #         "q4": "What are the main types of web servers, and what are their differences in terms of functionality and use cases?",
+        #         "q5": "Describe the role of a Content Delivery Network (CDN) in optimizing website performance.",
+        #         "q6": "What are the common security vulnerabilities in web applications, and how can they be prevented?",
+        #         "q7": "Explain the difference between client-side and server-side rendering in web development.",
+        #         "q8": "How do you ensure accessibility for users with disabilities when designing and developing websites?",
+        #         "q9": "What are the advantages and disadvantages of using a static site generator compared to a traditional CMS platform?",
+        #         "q10": "What are some emerging trends in web development, and how will they impact the future of the industry?",
+        #     }
+        # }
         return JsonResponse({"result": questions_dict}, status=200)
 
     except APIException as e:
@@ -79,19 +79,14 @@ def get_questions(request):
 
 @api_view(["POST"])
 def get_feedback(request):
-    # Extract 'question' and 'answer' from the POST data
     question = request.data.get("question")
     answer = request.data.get("answer")
-
-    # Check if both question and answer are provided
     if not question or not answer:
         return Response(
             {"status": "error", "message": "Both question and answer are required."},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
-    # Construct the prompt for generating feedback and the correct answer
-    prompt = f'Provide detailed feedback for the given answer "{answer}" to the question "{question}". Additionally, supply the correct answer for the question all in json format like "feedback":"your response","actualanswer":"your response".'
+    prompt = f'Provide detailed feedback and actual answer for the given answer "{answer}" to the question "{question}".  Give in json format like "feedback":"your response","actualanswer":"your response".'
 
     try:
         # Call the model to get the response
@@ -124,7 +119,6 @@ def parse_model_response(response_text):
         print(response_data)
         feedback = response_data.get("feedback", "").strip()
         actual_answer = response_data.get("actualanswer", "").strip()
-
         return feedback, actual_answer
     except json.JSONDecodeError as e:
         # Handle JSON parsing errors

@@ -1,4 +1,4 @@
-from home.views import get_speeches, create_speech
+from home.views import emails, delete_email
 from django.contrib import admin
 from django.urls import path
 from questions.views import get_questions, get_feedback
@@ -18,8 +18,6 @@ from company.views import (
 # from loginsignup.views import signup, login_view, logout_view
 
 urlpatterns = [
-    path("get_speeches/", get_speeches),
-    path("create_speech/", create_speech),
     path("get_questions/", get_questions),
     path("get_feedback/", get_feedback),
     #     path("signup/", signup),
@@ -39,4 +37,6 @@ urlpatterns = [
     path("company/<int:company_id>/questions/", get_company_questions_by_id),
     path("search_company/", search_company, name="search-company"),
     path("search_question/", search_question, name="search-question"),
+    path("emails/", emails),
+    path("delete/emails/<int:id>/", delete_email, name="delete_email"),
 ]
