@@ -49,12 +49,12 @@ def get_questions(request):
                 {"error": "Subdomain parameter is required"}, status=400
             )
 
-        prompt = f"Generate 10 questions related to {subdomain}"
+        prompt = f"Generate 10 good questions related to domain: {domain} and sudomain : {subdomain}"
         res = generate_response(prompt)
 
         # Parse the questions and return them in the desired format
         questions_dict = parse_questions(res)
-        return JsonResponse({"result": {"q1": api_key}}, status=200)
+        return JsonResponse({"result": {questions_dict}}, status=200)
 
     except APIException as e:
         return JsonResponse({"error": str(e)}, status=500)
