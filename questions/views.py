@@ -14,7 +14,7 @@ from rest_framework.exceptions import APIException
 api_key = settings.API_KEY
 import json
 
-genai.configure(api_key=api_key)
+genai.configure(api_key="AIzaSyBuexlsDxvaZpk31eHG6rY_-5GMQgcE7rE")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 
@@ -25,7 +25,7 @@ def generate_response(prompt):
         return response.text
     except Exception as e:
         print("Error:", e)
-        raise APIException(prompt)
+        raise APIException("An error occurred while generating the response.")
 
 
 def parse_questions(response_text):
