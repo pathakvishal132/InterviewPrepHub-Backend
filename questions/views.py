@@ -25,7 +25,7 @@ def generate_response(prompt):
         return response.text
     except Exception as e:
         print("Error:", e)
-        raise APIException("An error occurred while generating the response.", prompt)
+        raise APIException(prompt)
 
 
 def parse_questions(response_text):
