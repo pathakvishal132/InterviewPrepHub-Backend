@@ -14,7 +14,7 @@ from rest_framework.exceptions import APIException
 api_key = settings.API_KEY
 import json
 
-genai.configure(api_key="AIzaSyBuexlsDxvaZpk31eHG6rY_-5GMQgcE7rE")
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 
