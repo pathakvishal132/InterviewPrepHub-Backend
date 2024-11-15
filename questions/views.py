@@ -10,11 +10,12 @@ import google.generativeai as genai
 import os
 import re
 from rest_framework.exceptions import APIException
+from decouple import config
 
-api_key = settings.API_KEY
+API_KEY = config("API_KEY")
 import json
 
-genai.configure(api_key=api_key)
+genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 
