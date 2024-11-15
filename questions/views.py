@@ -21,9 +21,13 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 def generate_response(prompt):
     try:
-        response = model.generate_content(prompt)
-        print(response)
-        return response.text
+        if len(API_KEY) > 0:
+            response = model.generate_content(prompt)
+            print(response)
+            return response.text
+        else:
+            raise APIException("An error occurred while generating the response1.")
+
     except Exception as e:
         print("Error:", e)
         raise APIException("An error occurred while generating the response.")
