@@ -9,10 +9,11 @@ from rest_framework_simplejwt.views import (
 from loginsignup.views import RegisterView, LoginView, DashboardView
 from company.views import (
     company_question_handler,
-    get_company,
+    company_list_create,
     get_company_questions_by_id,
     search_company,
     search_question,
+    company_detail,
 )
 
 # from loginsignup.views import signup, login_view, logout_view
@@ -33,10 +34,11 @@ urlpatterns = [
         company_question_handler,
         name="company_question_detail",
     ),
-    path("get_company/", get_company),
+    path("get_company/", company_list_create),
     path("company/<int:company_id>/questions/", get_company_questions_by_id),
     path("search_company/", search_company, name="search-company"),
     path("search_question/", search_question, name="search-question"),
     path("emails/", emails),
     path("delete/emails/<int:id>/", delete_email, name="delete_email"),
+    path("companies/<int:pk>/", company_detail, name="company-detail"),
 ]

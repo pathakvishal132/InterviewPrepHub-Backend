@@ -68,8 +68,8 @@ def company_question_handler(request, company_question_id=None):
         )
 
 
-@api_view(["GET"])
-def get_company(request):
+@api_view(["GET", "POST"])
+def company_list_create(request):
     if request.method == "GET":
         company_names = Company.objects.all().order_by("id")
         page = request.GET.get("page", 1)
@@ -95,6 +95,47 @@ def get_company(request):
         }
         return Response(response_data, status=status.HTTP_200_OK)
 
+    elif request.method == "POST":
+        serializer = CompanySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+def company_detail(request, pk):
+    try:
+        company = Company.objects.get(pk=pk)
+    except Company.DoesNotExist:
+        return Response(
+            {"detail": "Company not found."}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    if request.method == "GET":
+        serializer = CompanySerializer(company)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "PUT":
+        serializer = CompanySerializer(company, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        if not company:
+            return Response(
+                {"detail": "Company question not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        else:
+            company.delete()
+            return Response(
+                {"detail": "Company deleted successfully."},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
 
 @api_view(["GET"])
 def get_company_questions_by_id(request, company_id):
@@ -102,7 +143,9 @@ def get_company_questions_by_id(request, company_id):
 
         company_questions = (
             CompanyQuestion.objects.filter(companies__id=company_id)
-            .values("question", "answer", "description", "role")
+            .values(
+                "id", "question", "answer", "description", "role", "experience", "level"
+            )
             .distinct()
         )
         if not company_questions.exists():
