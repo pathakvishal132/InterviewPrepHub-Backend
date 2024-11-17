@@ -228,6 +228,132 @@ def search_company(request):
 
 
 @api_view(["GET"])
+def get_other_details(request):
+    """
+    Fetch levels, roles, experiences, and descriptions for a specific company ID.
+    """
+    company_id = request.query_params.get(
+        "company_id"
+    )  # Get company_id from query parameters
+
+    if not company_id:
+        return Response(
+            {"error": "Company ID is required."}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        # Query the database for levels, roles, experiences, and descriptions of the given company_id
+        levels = (
+            CompanyQuestion.objects.filter(companies__id=company_id)
+            .values_list("level", flat=True)
+            .distinct()
+        )
+        roles = (
+            CompanyQuestion.objects.filter(companies__id=company_id)
+            .values_list("role", flat=True)
+            .distinct()
+        )
+        experiences = (
+            CompanyQuestion.objects.filter(companies__id=company_id)
+            .values_list("experience", flat=True)
+            .distinct()
+        )
+        descriptions = (
+            CompanyQuestion.objects.filter(companies__id=company_id)
+            .values_list("description", flat=True)
+            .distinct()
+        )
+
+        # Check if any data is found
+        if not (levels or roles or experiences or descriptions):
+            return Response(
+                {"message": "No details found for the given company ID."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return Response(
+            {
+                "company_id": company_id,
+                "levels": list(levels),
+                "roles": list(roles),
+                "experiences": list(experiences),
+                "descriptions": list(descriptions),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    except Exception as e:
+        # Handle unexpected errors
+        return Response(
+            {"error": f"An error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def filter_company_questions(request):
+    level = request.data.get("level", None)
+    role = request.data.get("role", None)
+    experience = request.data.get("experience", None)
+    description = request.data.get("description", None)
+
+    # Initialize the queryset to all CompanyQuestions
+    queryset = CompanyQuestion.objects.all()
+
+    # Apply filters if they are provided
+    if level:
+        queryset = queryset.filter(level__iexact=level)
+
+    if role:
+        queryset = queryset.filter(role__iexact=role)
+
+    if experience is not None:
+        queryset = queryset.filter(experience__gte=experience)
+
+    if description:
+        queryset = queryset.filter(description__icontains=description)
+
+    # If no questions match, return a message
+    if not queryset.exists():
+        return Response(
+            {
+                "questions": [],
+                "total_pages": 0,
+                "current_page": 1,
+                "total_questions": 0,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    # Handle pagination
+    page = request.GET.get("page", 1)  # Get the page number from the query parameters
+    paginator = Paginator(
+        queryset, 10
+    )  # Set page size to 10 (can be adjusted as needed)
+
+    try:
+        questions_page = paginator.page(page)
+    except Exception as e:
+        return Response(
+            {"detail": "Invalid page number."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Serialize the paginated results
+    serializer = CompanyQuestionSerializer(questions_page.object_list, many=True)
+
+    # Prepare response data
+    response_data = {
+        "questions": serializer.data,
+        "total_pages": paginator.num_pages,
+        "current_page": questions_page.number,
+        "total_questions": paginator.count,
+    }
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
 def search_question(request):
     if request.method == "GET":
         word = request.GET.get("word")

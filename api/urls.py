@@ -14,6 +14,8 @@ from company.views import (
     search_company,
     search_question,
     company_detail,
+    get_other_details,
+    filter_company_questions,
 )
 
 # from loginsignup.views import signup, login_view, logout_view
@@ -41,4 +43,10 @@ urlpatterns = [
     path("emails/", emails),
     path("delete/emails/<int:id>/", delete_email, name="delete_email"),
     path("companies/<int:pk>/", company_detail, name="company-detail"),
+    path("get_other_details/", get_other_details, name="get_other_details"),
+    path(
+        "filter_company_questions/",
+        filter_company_questions,
+        name="filter_company_questions",
+    ),
 ]
