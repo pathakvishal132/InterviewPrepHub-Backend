@@ -237,9 +237,12 @@ def search_question(request):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         questions = (
-            CompanyQuestion.objects.filter(question__icontains=word).distinct()
-            | CompanyQuestion.objects.filter(answer__icontains=word).distinct()
-        )
+            CompanyQuestion.objects.filter(question__icontains=word)
+            | CompanyQuestion.objects.filter(answer__icontains=word)
+            | CompanyQuestion.objects.filter(description__icontains=word)
+            | CompanyQuestion.objects.filter(level__icontains=word)
+            | CompanyQuestion.objects.filter(role__icontains=word)
+        ).distinct()
         if not questions.exists():
             return Response(
                 {"detail": "No matching questions found."},
