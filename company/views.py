@@ -154,7 +154,7 @@ def get_company_questions_by_id(request, company_id):
                 status=status.HTTP_404_NOT_FOUND,
             )
         page = request.GET.get("page")
-        paginator = Paginator(company_questions, 1)
+        paginator = Paginator(company_questions, 5)
 
         try:
             questions_page = paginator.page(page)
