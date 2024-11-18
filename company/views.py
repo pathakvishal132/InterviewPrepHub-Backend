@@ -74,18 +74,23 @@ def company_list_create(request):
         company_names = Company.objects.all().order_by("id")
         page = request.GET.get("page", 1)
         paginator = Paginator(company_names, 8)
+
         try:
             companies_page = paginator.page(page)
         except PageNotAnInteger:
+            # Return null in case of invalid page format
             return Response(
-                {"detail": "Invalid page number format."},
+                {"companies": None, "detail": "Invalid page number format."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except EmptyPage:
+            # Return null in case of out-of-range page number
             return Response(
-                {"detail": "Page number out of range."},
+                {"companies": None, "detail": "Page number out of range."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        # Serialize and return the data if successful
         serializer = CompanySerializer(companies_page.object_list, many=True)
         response_data = {
             "companies": serializer.data,
