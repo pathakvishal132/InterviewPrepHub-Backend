@@ -312,6 +312,12 @@ def get_other_details(request):
         )
 
 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+from django.core.paginator import Paginator
+
+
 @api_view(["POST"])
 def filter_company_questions(request):
     level = request.data.get("level", None)
@@ -355,6 +361,10 @@ def filter_company_questions(request):
     paginator = Paginator(
         queryset, 10
     )  # Set page size to 10 (can be adjusted as needed)
+
+    # If the page number exceeds the total pages, set to the first page
+    if int(page) > paginator.num_pages:
+        page = 1
 
     try:
         questions_page = paginator.page(page)
