@@ -22,7 +22,8 @@ class CompanyQuestionSerializer(serializers.ModelSerializer):
             "date_of_creation",
             "description",
             "role",
-            "experience",
+            "min_experience",
+            "max_experience",
         ]
 
     def create(self, validated_data):

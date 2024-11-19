@@ -149,7 +149,14 @@ def get_company_questions_by_id(request, company_id):
         company_questions = (
             CompanyQuestion.objects.filter(companies__id=company_id)
             .values(
-                "id", "question", "answer", "description", "role", "experience", "level"
+                "id",
+                "question",
+                "answer",
+                "description",
+                "role",
+                "min_experience",
+                "max_experience",
+                "level",
             )
             .distinct()
         )
@@ -258,9 +265,14 @@ def get_other_details(request):
             .values_list("role", flat=True)
             .distinct()
         )
-        experiences = (
+        min_experiences = (
             CompanyQuestion.objects.filter(companies__id=company_id)
-            .values_list("experience", flat=True)
+            .values_list("min_experience", flat=True)
+            .distinct()
+        )
+        max_experiences = (
+            CompanyQuestion.objects.filter(companies__id=company_id)
+            .values_list("max_experience", flat=True)
             .distinct()
         )
         descriptions = (
@@ -270,7 +282,7 @@ def get_other_details(request):
         )
 
         # Check if any data is found
-        if not (levels or roles or experiences or descriptions):
+        if not (levels or roles or min_experiences or max_experiences or descriptions):
             return Response(
                 {"message": "No details found for the given company ID."},
                 status=status.HTTP_404_NOT_FOUND,
@@ -281,7 +293,8 @@ def get_other_details(request):
                 "company_id": company_id,
                 "levels": list(levels),
                 "roles": list(roles),
-                "experiences": list(experiences),
+                "min_experiences": list(min_experiences),
+                "max_experiences": list(max_experiences),
                 "descriptions": list(descriptions),
             },
             status=status.HTTP_200_OK,
@@ -299,7 +312,8 @@ def get_other_details(request):
 def filter_company_questions(request):
     level = request.data.get("level", None)
     role = request.data.get("role", None)
-    experience = request.data.get("experience", None)
+    minExperience = request.data.get("min_experience", None)
+    maxExperience = request.data.get("max_experience", None)
     description = request.data.get("description", None)
 
     # Initialize the queryset to all CompanyQuestions
@@ -312,8 +326,10 @@ def filter_company_questions(request):
     if role:
         queryset = queryset.filter(role__iexact=role)
 
-    if experience is not None:
-        queryset = queryset.filter(experience__gte=experience)
+    if minExperience is not None and maxExperience is not None:
+        queryset = queryset.filter(
+            min_experience__lte=maxExperience, max_experience__gte=minExperience
+        )
 
     if description:
         queryset = queryset.filter(description__icontains=description)
