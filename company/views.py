@@ -11,7 +11,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 @api_view(["GET", "POST", "PUT", "DELETE"])
 def company_question_handler(request, company_question_id=None):
     if request.method == "POST":
-        serializer = CompanyQuestionSerializer(data=request.data)
+        if isinstance(request.data, list):
+            serializer = CompanyQuestionSerializer(data=request.data, many=True)
+        else:
+            serializer = CompanyQuestionSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
