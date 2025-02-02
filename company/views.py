@@ -3,8 +3,12 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import CompanyQuestion, Company
-from .serializers import CompanyQuestionSerializer, CompanySerializer
+from .models import CompanyQuestion, Company, CompanyReview
+from .serializers import (
+    CompanyQuestionSerializer,
+    CompanySerializer,
+    CompanyReviewSerializer,
+)
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
@@ -427,3 +431,49 @@ def search_question(request):
             "total_questions": paginator.count,
         }
         return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def get_company_reviews(request):
+    company_id = request.GET.get("company_id")
+    if not company_id:
+        return Response(
+            {"detail": "Company ID is required."}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    reviews = CompanyReview.objects.filter(company_id=company_id)
+    if not reviews.exists():
+        return Response(
+            {"detail": "No reviews found for this company."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    page = request.GET.get("page", 1)
+    paginator = Paginator(reviews, 6)
+
+    try:
+        reviews_page = paginator.page(page)
+    except:
+        return Response(
+            {"detail": "Invalid page number."}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    serializer = CompanyReviewSerializer(reviews_page.object_list, many=True)
+
+    response_data = {
+        "reviews": serializer.data,
+        "total_pages": paginator.num_pages,
+        "current_page": reviews_page.number,
+        "total_reviews": paginator.count,
+    }
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def post_company_review(request):
+    serializer = CompanyReviewSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

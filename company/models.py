@@ -30,3 +30,17 @@ class CompanyQuestion(models.Model):
 
     def __str__(self):
         return f"{self.question[:50]}..."
+
+
+class CompanyReview(models.Model):
+    company_id = models.CharField(max_length=100)  # Company identifier
+    company_name = models.CharField(max_length=255)  # Company name
+    job_role = models.CharField(max_length=255)
+    interview_level = models.CharField(max_length=255, blank=True, null=True)
+    questions_asked = models.TextField(blank=True, null=True)
+    company_culture = models.TextField(blank=True, null=True)
+    company_payroll = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.company_name} - {self.job_role}"

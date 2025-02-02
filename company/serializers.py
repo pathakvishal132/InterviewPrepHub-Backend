@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CompanyQuestion, Company
+from .models import CompanyQuestion, Company, CompanyReview
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -35,3 +35,9 @@ class CompanyQuestionSerializer(serializers.ModelSerializer):
             question.companies.add(company)
 
         return question
+
+
+class CompanyReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyReview
+        fields = "__all__"

@@ -22,6 +22,8 @@ from company.views import (
     company_detail,
     get_other_details,
     filter_company_questions,
+    get_company_reviews,
+    post_company_review,
 )
 
 
@@ -63,4 +65,6 @@ urlpatterns = [
         get_user_submission_data,
         name="get_user_submission_data",
     ),
+    path("company_reviews/", get_company_reviews, name="get-company-reviews"),
+    path("reviews/post/", post_company_review, name="post-company-review"),
 ]
