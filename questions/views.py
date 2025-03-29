@@ -175,7 +175,7 @@ def get_feedback(request):
     answer = request.data.get("answer")
     user_id = request.data.get("id")
 
-    if not question or not answer or not user_id:
+    if not question or not answer:
         return Response(
             {
                 "status": "error",
@@ -222,7 +222,6 @@ def get_feedback(request):
 def get_user_submission_data(request):
     print("kkk")
     user_id = request.query_params.get("user_id")  # Get user_id from query parameters
-
     if not user_id:
         return Response(
             {"status": "error", "message": "user_id is required."},
