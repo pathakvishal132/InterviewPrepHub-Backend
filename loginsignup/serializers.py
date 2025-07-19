@@ -15,11 +15,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     # Move the create method outside of Meta
     def create(self, validated_data):
-        # Ensure the password is hashed before saving the user
         user = User.objects.create_user(
             username=validated_data["username"],
             email=validated_data["email"],
-            password=validated_data["password"],  # This will hash the password
+            password=validated_data["password"],  
         )
         return user
 
